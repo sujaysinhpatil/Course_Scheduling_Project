@@ -2,13 +2,12 @@ package com.geektrust.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class EmployeeDto {
-    @NonNull
-    private final String name;
-    @NonNull
+    private String name;
     private final String email;
 }

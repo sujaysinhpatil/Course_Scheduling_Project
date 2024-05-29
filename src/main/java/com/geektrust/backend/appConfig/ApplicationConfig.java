@@ -24,8 +24,8 @@ public class ApplicationConfig {
     private final IEmployeeRepository iEmployeeRepository = new EmployeeRepositoryImpl();
     private final IRegistrationRepository iRegistrationRepository = new RegistrationRepositoryImpl();
 
-    private final ICourseService iCourseService = new CourseServiceImpl(iCourseRepository, iRegistrationRepository);
     private final IEmployeeService iEmployeeService = new EmployeeServiceImpl(iEmployeeRepository);
+    private final ICourseService iCourseService = new CourseServiceImpl(iCourseRepository, iRegistrationRepository, iEmployeeService);
     private final IRegistrationService iRegistrationService = new RegistrationServiceImpl(iRegistrationRepository, iEmployeeService, iCourseService);
 
     private final AddCourseCommand addCourseCommand = new AddCourseCommand(iCourseService);

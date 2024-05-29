@@ -1,12 +1,8 @@
 package com.geektrust.backend.dto;
 
 import java.util.List;
-
-import com.geektrust.backend.entity.Employee;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-// import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -22,5 +18,5 @@ public class CourseDto {
     private final int minStrength;
     private final int maxStrength;
     private String status;
-    private List<Employee> employeeList;
+    private List<EmployeeDto> employeeList;
 }

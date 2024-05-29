@@ -1,5 +1,6 @@
 package com.geektrust.backend.service.serviceImpl;
 
+import com.geektrust.backend.Exception.InvalidInputException;
 import com.geektrust.backend.dto.CourseDto;
 import com.geektrust.backend.dto.EmployeeDto;
 import com.geektrust.backend.dto.RegistrationDto;
@@ -25,30 +26,36 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public String create(RegistrationDto registrationDto) {
         
         String coourseRegId = getCourseRegId(registrationDto);
-        System.out.println(coourseRegId);
         registrationDto.setAccepted(true);
         registrationDto.setRegId(coourseRegId);
         return iRegistrationRepository.save(registrationDto);
     }
 
-    // course-registration-id is REG-COURSE-<EMPLOYEE-NAME>-<COURSE-NAME>
     private String getCourseRegId(RegistrationDto registrationDto) {
+        if(!iEmployeeService.existsById(registrationDto.getEmailId())) {
+            iEmployeeService.save(new EmployeeDto(registrationDto.getEmailId()));
+        }
         EmployeeDto empDto = iEmployeeService.getEmployee(registrationDto.getEmailId());
         CourseDto courseDto = iCourseService.getCourse(registrationDto.getCourseId());
+        int regEmpSize = iRegistrationRepository.findAllByCourseId(courseDto.getCourseId()).size();
+        if(regEmpSize >= courseDto.getMaxStrength()) {
+            throw new InvalidInputException("COURSE_FULL_ERROR");
+        }
+        if("CONFIRMED".equals(courseDto.getStatus())) {
+            throw new InvalidInputException("COURSE_ALREADY_ALLOTED");
+        }
         return "REG-COURSE-"+empDto.getName()+"-"+courseDto.getCourseName();
     }
 
     @Override
     public String cancelRegistration(String regId) {
-        // CANCEL_REJECTED
         RegistrationDto registrationDto = iRegistrationRepository.findById(regId).get();
         CourseDto courseDto = iCourseService.getCourse(registrationDto.getCourseId());
-        if(courseDto.getStatus().equals("ALLOTED")) {
-            return "CANCEL_REJECTED";
+        if ("CONFIRMED".equals(courseDto.getStatus())) {
+            return regId+" "+"CANCEL_REJECTED";
         } else {
-            registrationDto.setAccepted(false);
-            iRegistrationRepository.save(registrationDto);
-            return regId;
+            iRegistrationRepository.deleteById(regId);
+            return regId+" "+"CANCEL_ACCEPTED";
         }
     }
     

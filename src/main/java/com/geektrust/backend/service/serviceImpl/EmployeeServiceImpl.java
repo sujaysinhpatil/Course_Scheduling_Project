@@ -17,5 +17,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeeDto getEmployee(String emailId) {
         return iEmployeeRepository.findById(emailId).orElseThrow(()->new InvalidInputException("Employee with id " +emailId+ " doen't exist"));
     }
-    
+
+    @Override
+    public boolean existsById(String id) {
+        return iEmployeeRepository.existsById(id);
+    }
+
+    @Override
+    public String save(EmployeeDto employeeDto) {
+        return iEmployeeRepository.save(employeeDto);
+    }
+
 }

@@ -20,14 +20,6 @@ public class RegistrationRepositoryImpl implements IRegistrationRepository{
     public RegistrationRepositoryImpl(HashMap<String, Registration> regMap) {
         this.regMap = regMap;
     }
-
-    // @Override
-    // public String save(Registration entity) {
-    //     String email = entity.getEmailId();
-    //     entity.setRegId("REG-COURSE-"+email.substring(0, email.indexOf("@"))+entity);
-    //     // regMap.put(entity., entity);
-    // }
-    // REG-COURSE-<EMPLOYEE-NAME>-<COURSE-NAME>
     
     @Override
     public String save(RegistrationDto regDto) {

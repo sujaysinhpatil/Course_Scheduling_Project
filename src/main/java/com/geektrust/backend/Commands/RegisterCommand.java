@@ -7,7 +7,7 @@ import com.geektrust.backend.dto.RegistrationDto;
 import com.geektrust.backend.service.IRegistrationService;
 import com.geektrust.backend.utils.Constant;
 
-public class RegisterCommand implements ICommand{
+public class RegisterCommand implements ICommand {
 
     private final IRegistrationService iRegistrationService;
 
@@ -18,8 +18,8 @@ public class RegisterCommand implements ICommand{
     @Override
     public void execute(List<String> tokens) {
         try {
-            if(tokens.size()!=Constant.EXPECTED_ARGS_REGISTER_COURSE){
-                throw new InvalidInputException("INPUT_DATA_ERROR_MESSAGE");
+            if(tokens.size()!=Constant.EXPECTED_ARGS_REGISTER_COURSE) {
+                throw new InvalidInputException("INPUT_DATA_ERROR");
             }
             RegistrationDto registrationDto = getRegistrationDto(tokens);
             String registrationId = iRegistrationService.create(registrationDto);

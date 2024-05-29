@@ -6,7 +6,7 @@ import com.geektrust.backend.Exception.InvalidInputException;
 import com.geektrust.backend.service.IRegistrationService;
 import com.geektrust.backend.utils.Constant;
 
-public class CancelCommand implements ICommand{
+public class CancelCommand implements ICommand {
 
     private final IRegistrationService iRegistrationService;
 
@@ -17,13 +17,13 @@ public class CancelCommand implements ICommand{
     @Override
     public void execute(List<String> tokens) {
         try {
-            if(tokens.size()!=Constant.EXPECTED_ARGS_CANCEL){
+            if(tokens.size()!=Constant.EXPECTED_ARGS_CANCEL) {
                 throw new InvalidInputException("INPUT_DATA_ERROR");
-            }else{
+            } else {
                 String regid = iRegistrationService.cancelRegistration(tokens.get(1));
-                System.out.println(regid+" "+"CANCEL_ACCEPTED");
+                System.out.println(regid);
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             System.out.println(e.getMessage());            
         }
     }
