@@ -1,0 +1,88 @@
+plugins {
+	id 'java'
+	id 'jacoco'
+    id 'application'
+}
+
+group = 'com.geektrust'
+version = '1.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+jacoco { //Please do not change this
+    toolVersion = "0.8.4"
+    reportsDir = file("$buildDir/jacoco")
+}
+
+jacocoTestReport { //Please do not change this
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+        xml.destination file("./jacoco.xml")
+    }
+}
+
+application {
+    mainClassName = 'com.geektrust.backend.App'
+}
+
+jar {
+    archiveBaseName = 'geektrust' //Please do not change this final artifact name
+    version =  null               //Please do not change this final artifact version
+    manifest {
+        attributes 'Main-Class' : 'com.geektrust.backend.App' //Change this to the main class of your program which will be executed
+    }
+    // To create a single jar with all dependencies.
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
+	testCompile 'org.junit.jupiter:junit-jupiter:5.4.2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.8.2')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.8.2') 
+
+    implementation 'org.springframework.data:spring-data-jpa:3.2.0'
+}
+
+test { ///Please do not change this
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_ERROR"
+    }
+    finalizedBy jacocoTestReport // report is always generated after tests run
+    afterSuite { desc, result ->
+        if (!desc.parent)
+            println("${result.resultType} " +
+                "(${result.testCount} tests, " +
+                "${result.successfulTestCount} successes, " +
+                "${result.failedTestCount} failures, " +
+                "${result.skippedTestCount} skipped)")
+        }
+}
+
+
+// task runScript(type: Exec) {
+//     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+//         commandLine 'C:/Program Files/Git/bin/bash.exe', '-c', './run.sh'
+//     } else {
+//         commandLine './run.sh'
+//     }
+// }
+
+// build.finalizedBy(runScript)
