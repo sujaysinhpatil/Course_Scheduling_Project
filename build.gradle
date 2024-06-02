@@ -55,9 +55,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.8.2')
-    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.8.2') 
-
-    implementation 'org.springframework.data:spring-data-jpa:3.2.0'
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.8.2')
 }
 
 test { ///Please do not change this
@@ -75,14 +73,3 @@ test { ///Please do not change this
                 "${result.skippedTestCount} skipped)")
         }
 }
-
-
-// task runScript(type: Exec) {
-//     if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-//         commandLine 'C:/Program Files/Git/bin/bash.exe', '-c', './run.sh'
-//     } else {
-//         commandLine './run.sh'
-//     }
-// }
-
-// build.finalizedBy(runScript)

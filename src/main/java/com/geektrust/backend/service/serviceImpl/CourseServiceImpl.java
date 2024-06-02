@@ -3,6 +3,7 @@ package com.geektrust.backend.service.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.geektrust.backend.Exception.CourseException;
 import com.geektrust.backend.Exception.InvalidInputException;
 import com.geektrust.backend.dto.AllotResponse;
 import com.geektrust.backend.dto.CourseDto;
@@ -34,14 +35,22 @@ public class CourseServiceImpl implements ICourseService {
     public List<AllotResponse> allotCourse(String courseId) {
         CourseDto courseDto = iCourseRepository.findById(courseId).orElseThrow(()->new InvalidInputException("Course not found with id "+ courseId));
         List<EmployeeDto> employeeList = getEmployeeList(courseId);
-        if (courseDto.getMinStrength() <= employeeList.size() && !"CANCELLED".equals(courseDto.getStatus())) {
-            courseDto.setStatus("CONFIRMED");
-            courseDto.setEmployeeList(employeeList);
+
+        checkStatus(employeeList.size(), courseDto);
+
+        courseDto.setStatus("CONFIRMED");
+        courseDto.setEmployeeList(employeeList);
+        iCourseRepository.updateCourse(courseDto);
+        List<AllotResponse> allotResponseList = iRegistrationRepository.findAllByCourseId(courseId).stream().map(r->getAllotResponse(courseDto, r)).collect(Collectors.toList());
+        return allotResponseList;
+    }
+
+    private void checkStatus(int currentSize, CourseDto courseDto) {
+        if ("CANCELLED".equals(courseDto.getStatus())) throw new CourseException("COURSE_CANCELED");
+        if (courseDto.getMinStrength() > currentSize) {
+            courseDto.setStatus("COURSE_CANCELED");
             iCourseRepository.updateCourse(courseDto);
-            List<AllotResponse> allotResponseList = iRegistrationRepository.findAllByCourseId(courseId).stream().map(r->getAllotResponse(courseDto, r)).collect(Collectors.toList());
-            return allotResponseList;
-        } else {
-            throw new InvalidInputException("Given course with " +courseId+ " is CANCELLED or not enough registration");
+            throw new CourseException("COURSE_CANCELED");
         }
     }
 

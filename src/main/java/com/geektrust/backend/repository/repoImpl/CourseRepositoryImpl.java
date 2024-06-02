@@ -23,7 +23,6 @@ public class CourseRepositoryImpl implements ICourseRepository {
 
     @Override
     public String save(CourseDto courseDto) {
-        // OFFERING-<COURSE-NAME>-<INSTRUCTOR>
         courseDto.setStatus("YET_TO_START");
         courseDto.setCourseId("OFFERING-"+courseDto.getCourseName()+"-"+courseDto.getInstructor());
         Course course = getCourse(courseDto);
@@ -50,7 +49,7 @@ public class CourseRepositoryImpl implements ICourseRepository {
 
     @Override
     public boolean existsById(String id) {
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+        return courseMap.containsKey(id);
     }
 
     @Override

@@ -27,7 +27,6 @@ public class RegisterCommand implements ICommand {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        
     }
 
     private RegistrationDto getRegistrationDto(List<String> tokens) {

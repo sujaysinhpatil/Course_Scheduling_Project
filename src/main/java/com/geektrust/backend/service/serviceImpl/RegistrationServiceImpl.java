@@ -1,6 +1,6 @@
 package com.geektrust.backend.service.serviceImpl;
 
-import com.geektrust.backend.Exception.InvalidInputException;
+import com.geektrust.backend.Exception.CourseException;
 import com.geektrust.backend.dto.CourseDto;
 import com.geektrust.backend.dto.EmployeeDto;
 import com.geektrust.backend.dto.RegistrationDto;
@@ -39,10 +39,10 @@ public class RegistrationServiceImpl implements IRegistrationService {
         CourseDto courseDto = iCourseService.getCourse(registrationDto.getCourseId());
         int regEmpSize = iRegistrationRepository.findAllByCourseId(courseDto.getCourseId()).size();
         if(regEmpSize >= courseDto.getMaxStrength()) {
-            throw new InvalidInputException("COURSE_FULL_ERROR");
+            throw new CourseException("COURSE_FULL_ERROR");
         }
         if("CONFIRMED".equals(courseDto.getStatus())) {
-            throw new InvalidInputException("COURSE_ALREADY_ALLOTED");
+            throw new CourseException("COURSE_ALREADY_ALLOTED");
         }
         return "REG-COURSE-"+empDto.getName()+"-"+courseDto.getCourseName();
     }

@@ -23,8 +23,6 @@ public class RegistrationRepositoryImpl implements IRegistrationRepository{
     
     @Override
     public String save(RegistrationDto regDto) {
-        // String email = regDto.getEmailId();
-        // regDto.setRegId("REG-COURSE-"+email.substring(0, email.indexOf("@"))+regDto.);
         Registration registration=getRegistration(regDto);
         regMap.put(registration.getRegId(), registration);
         return registration.getRegId();
