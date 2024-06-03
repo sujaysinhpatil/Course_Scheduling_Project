@@ -3,7 +3,6 @@ package com.geektrust.backend.service.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.geektrust.backend.Exception.CourseException;
 import com.geektrust.backend.Exception.InvalidInputException;
 import com.geektrust.backend.dto.AllotResponse;
 import com.geektrust.backend.dto.CourseDto;
@@ -38,7 +37,6 @@ public class CourseServiceImpl implements ICourseService {
 
         checkStatus(employeeList.size(), courseDto);
 
-        courseDto.setStatus("CONFIRMED");
         courseDto.setEmployeeList(employeeList);
         iCourseRepository.updateCourse(courseDto);
         List<AllotResponse> allotResponseList = iRegistrationRepository.findAllByCourseId(courseId).stream().map(r->getAllotResponse(courseDto, r)).collect(Collectors.toList());
@@ -46,11 +44,10 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     private void checkStatus(int currentSize, CourseDto courseDto) {
-        if ("CANCELLED".equals(courseDto.getStatus())) throw new CourseException("COURSE_CANCELED");
-        if (courseDto.getMinStrength() > currentSize) {
+        if (courseDto.getMinStrength() <= currentSize && !"CANCELLED".equals(courseDto.getStatus())) {
+            courseDto.setStatus("CONFIRMED");
+        } else {
             courseDto.setStatus("COURSE_CANCELED");
-            iCourseRepository.updateCourse(courseDto);
-            throw new CourseException("COURSE_CANCELED");
         }
     }
 

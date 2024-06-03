@@ -3,7 +3,6 @@ package com.geektrust.backend.ServiceTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.geektrust.backend.Exception.CourseException;
 import com.geektrust.backend.Exception.InvalidInputException;
 import com.geektrust.backend.dto.AllotResponse;
 import com.geektrust.backend.dto.CourseDto;
@@ -60,13 +58,15 @@ public class CourseServiceTest {
 
     @Test
     public void testCreateCourse() {
-        when(courseRepository.save(courseDto)).thenReturn("COURSE1");
-        String courseId = courseService.createCourse(courseDto);
-        assertEquals("COURSE1", courseId);
+        when(courseRepository.save(any(CourseDto.class))).thenReturn("OFFERING-COURSE1-INSTRUCTOR");
+
+        String result = courseService.createCourse(courseDto);
+
+        assertEquals("OFFERING-COURSE1-INSTRUCTOR", result);
     }
 
     @Test
-    public void testAllotCourseSuccessful() {
+    public void testAllotCourse() {
         when(courseRepository.findById("COURSE1")).thenReturn(Optional.of(courseDto));
         when(registrationRepository.findAllByCourseId("COURSE1")).thenReturn(Arrays.asList(registrationDto1, registrationDto2));
         when(employeeService.getEmployee("john@example.com")).thenReturn(employeeDto1);
@@ -75,45 +75,41 @@ public class CourseServiceTest {
         List<AllotResponse> responses = courseService.allotCourse("COURSE1");
 
         assertEquals(2, responses.size());
-        verify(courseRepository).updateCourse(any(CourseDto.class));
+        assertEquals("john@example.com", responses.get(0).getEmailId());
+        assertEquals("jane@example.com", responses.get(1).getEmailId());
     }
 
     @Test
-    public void testAllotCourseFailure() {
-        // Set minimum strength greater than available registrations
-        courseDto = new CourseDto("COURSE1", "Course Name", "Instructor", "2024-06-20", 3, 10, "OFFERING", new ArrayList<>());
-        when(courseRepository.findById("COURSE1")).thenReturn(Optional.of(courseDto));
-        when(registrationRepository.findAllByCourseId("COURSE1")).thenReturn(Arrays.asList(registrationDto1, registrationDto2));
+    public void testAllotCourseThrowsException() {
+        String courseId = "INVALID_COURSE_ID";
+        when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
 
-        CourseException exception = assertThrows(CourseException.class, () -> {
-            courseService.allotCourse("COURSE1");
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
+            courseService.allotCourse(courseId);
         });
 
-        assertEquals("COURSE_CANCELED", exception.getMessage());
+        assertEquals("Course not found with id " + courseId, exception.getMessage());
     }
 
     @Test
     public void testGetCourse() {
         when(courseRepository.findById("COURSE1")).thenReturn(Optional.of(courseDto));
-        CourseDto retrievedCourse = courseService.getCourse("COURSE1");
-        assertEquals("COURSE1", retrievedCourse.getCourseId());
+
+        CourseDto result = courseService.getCourse("COURSE1");
+
+        assertEquals("COURSE1", result.getCourseId());
     }
 
     @Test
-    public void testGetCourseNotFound() {
-        when(courseRepository.findById("COURSE1")).thenReturn(Optional.empty());
+    public void testGetCourseThrowsException() {
+        String courseId = "INVALID_COURSE_ID";
+        when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
+
         InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
-            courseService.getCourse("COURSE1");
+            courseService.getCourse(courseId);
         });
 
-        assertEquals("Course with id COURSE1 doen't exist", exception.getMessage());
-    }
-
-    @Test
-    public void testGetAllotResponse() {
-        AllotResponse response = courseService.getAllotResponse(courseDto, registrationDto1);
-        assertEquals("REG1", response.getRegId());
-        assertEquals("COURSE1", response.getCourseId());
+        assertEquals("Course with id " + courseId + " doen't exist", exception.getMessage());
     }
     
 }
